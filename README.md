@@ -92,37 +92,39 @@ sudo nixos-rebuild switch --flake .#<host>
 
 ## Secret-Management mit sops-nix
 
-Für Service-Hosts (`homeserver-laptop`, `vps`) ist `sops-nix` als Modul eingebunden. Die zentrale Moduldefinition liegt in `modules/nixos/secrets/sops.nix`.
+`flake.nix` bindet `sops-nix` als Input ein, und das Modul `modules/nixos/secrets.nix` stellt Secrets deklarativ unter `/run/secrets/...` bereit.
 
-### Dateien
+### Privater Pfadstandard
 
-- `.sops.yaml`: `age`-Empfänger und `creation_rules`
-- `secrets/common.yaml`: gemeinsame Secrets (SMB, Container, VPN)
-- `secrets/homeserver.yaml`: Homeserver-spezifische App-Secrets
-- `secrets/vps.yaml`: VPS-spezifische App-Secrets
+Nicht versionierte Secret-Dateien liegen lokal unter:
 
-### Key-Setup (age)
+- `secrets/private/common.yaml`
+- `secrets/private/homeserver-laptop.yaml`
+- `secrets/private/vps.yaml`
 
-1. Admin-Key erzeugen (lokal, **nicht committen**):
+Die komplette Struktur `secrets/private/` ist in `.gitignore` eingetragen.
 
-```bash
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-```
+### Kurz-Workflow
 
-2. Host-Key auf jedem Host erzeugen (wird durch `sops.age.generateKey = true` automatisch unter `/var/lib/sops-nix/key.txt` angelegt).
-
-3. Öffentliche `age1...`-Keys aus Admin- und Host-Keys in `.sops.yaml` eintragen.
-
-4. Secret-Dateien immer über `sops` bearbeiten:
+1. **Secret anlegen/verschlüsseln**
 
 ```bash
-sops secrets/common.yaml
-sops secrets/homeserver.yaml
-sops secrets/vps.yaml
+mkdir -p secrets/private
+sops secrets/private/common.yaml
+sops secrets/private/homeserver-laptop.yaml
+sops secrets/private/vps.yaml
 ```
 
-> Platzhalterwerte `CHANGE_ME_ENCRYPTED` müssen durch echte, verschlüsselte Werte ersetzt werden.
+2. **Auf dem Host entschlüsseln lassen**
+
+- Auf dem Zielhost sorgt `sops-nix` mit dem Host-Key (`/var/lib/sops-nix/key.txt`) für die Entschlüsselung.
+- Deklarierte Secrets landen zur Laufzeit unter `/run/secrets/...` (z. B. `/run/secrets/smb-password`, `/run/secrets/openvpn.env`).
+
+3. **Konfiguration deployen**
+
+```bash
+sudo nixos-rebuild switch --flake .#<host>
+```
 
 ## Domaincontroller (homeserver-laptop)
 
@@ -131,7 +133,7 @@ Der Homeserver ist als Samba AD Domain Controller für `chaos4all.de` vorbereite
 - Realm: `CHAOS4ALL.DE`
 - NetBIOS/Domain: `CHAOS4ALL`
 - Samba AD Provisioning läuft einmalig über ein Activation Script, sobald `sam.ldb` noch nicht existiert.
-- Das initiale Administrator-Passwort kommt aus `secrets/homeserver.yaml` unter `ad.domain-admin-password`.
+- Das initiale Administrator-Passwort kommt aus `secrets/private/homeserver-laptop.yaml` unter `ad.domain-admin-password`.
 
 Nach dem ersten Deploy sollten DNS/NTP auf den DC zeigen und Clients der Domain beitreten.
 

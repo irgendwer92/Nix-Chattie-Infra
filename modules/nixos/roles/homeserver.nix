@@ -74,7 +74,7 @@ in
     };
 
     sops.secrets."ad/domain-admin-password" = {
-      sopsFile = ../../../secrets/homeserver.yaml;
+      sopsFile = ../../../secrets/private/homeserver-laptop.yaml;
       owner = "root";
       mode = "0400";
     };
@@ -217,11 +217,10 @@ in
           environment = {
             OPENVPN_PROVIDER = "CUSTOM";
             OPENVPN_CONFIG = "custom";
-            OPENVPN_USERNAME = config.sops.placeholder."vpn/openvpn-username";
-            OPENVPN_PASSWORD = config.sops.placeholder."vpn/openvpn-password";
             LOCAL_NETWORK = "192.168.0.0/16";
             TRANSMISSION_WEB_UI = "flood-for-transmission";
           };
+          environmentFiles = [ config.sops.templates."openvpn.env".path ];
           volumes = [
             "${appRoot}/transmission:/data"
             "${appRoot}/transmission/config:/config"

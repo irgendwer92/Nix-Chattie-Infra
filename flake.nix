@@ -27,6 +27,7 @@
         ./modules/nixos/ssh.nix
         ./modules/nixos/users.nix
         ./modules/nixos/monitoring-base.nix
+        ./modules/nixos/secrets.nix
       ];
 
       hmProfiles = {

@@ -3,7 +3,6 @@
   imports = [
     disko.nixosModules.disko
     ./disko.nix
-    ../../modules/nixos/secrets/sops.nix
     ../../modules/nixos/roles/homeserver.nix
   ];
 
