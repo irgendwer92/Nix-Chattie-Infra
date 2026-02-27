@@ -10,6 +10,14 @@ Diese Repository-Struktur verwaltet mehrere NixOS-Hosts über eine gemeinsame Fl
 - `modules/nixos/`: wiederverwendbare Basismodule (Netzwerk, SSH, Nutzer, Monitoring)
 - `homes/`: Home-Manager-Profile für Client-Geräte
 
+## Secrets & Access
+
+Zugangsdaten (insbesondere SSH-Authorized-Keys) werden **nicht** global im Shared-Modul erzwungen.
+
+- SSH-Keys müssen host-spezifisch (z. B. in `hosts/<hostname>/configuration.nix`) oder in privaten, nicht versionierten Overlays eingebunden werden.
+- Benutzerdefinitionen und privilegierte Gruppen (z. B. `wheel`) sollen explizit pro Host gesetzt werden.
+- Der gemeinsame Default setzt nur `security.sudo.wheelNeedsPassword = true` (via `lib.mkDefault`), sodass Passwort-loses `sudo` nicht versehentlich global aktiviert wird.
+
 ## Enthaltene Hosts
 
 - `rpi5-klipper-1`
