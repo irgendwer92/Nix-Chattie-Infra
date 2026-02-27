@@ -7,9 +7,13 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, disko, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -26,7 +30,9 @@
       mkHost = hostName:
         lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit self; };
+          specialArgs = {
+            inherit self disko;
+          };
           modules =
             commonModules
             ++ [ ./hosts/${hostName}/configuration.nix ]
