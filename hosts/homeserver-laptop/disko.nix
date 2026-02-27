@@ -59,7 +59,15 @@
               extraArgs = [ "-f" ];
               subvolumes = {
                 "@data" = {
-                  mountpoint = "/mnt/4tb";
+                  mountpoint = "/srv/storage/4tb/data";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@snapshots" = {
+                  mountpoint = "/srv/storage/4tb/snapshots";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@backups" = {
+                  mountpoint = "/srv/storage/4tb/backups";
                   mountOptions = [ "compress=zstd" "noatime" ];
                 };
               };
@@ -82,7 +90,15 @@
               extraArgs = [ "-f" ];
               subvolumes = {
                 "@data" = {
-                  mountpoint = "/mnt/8tb";
+                  mountpoint = "/srv/storage/8tb/data";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@snapshots" = {
+                  mountpoint = "/srv/storage/8tb/snapshots";
+                  mountOptions = [ "compress=zstd" "noatime" ];
+                };
+                "@backups" = {
+                  mountpoint = "/srv/storage/8tb/backups";
                   mountOptions = [ "compress=zstd" "noatime" ];
                 };
               };
