@@ -25,7 +25,13 @@
         ./modules/nixos/monitoring-base.nix
       ];
 
-      clientHosts = [ "client-laptop" "tablet" "gaming-pc" ];
+      hmProfiles = {
+        client-laptop = ./home/admin/laptop.nix;
+        tablet = ./home/admin/tablet.nix;
+        gaming-pc = ./home/admin/gaming-pc.nix;
+      };
+
+      clientHosts = builtins.attrNames hmProfiles;
 
       mkHost = hostName:
         lib.nixosSystem {
@@ -41,7 +47,7 @@
               {
                 home-manager.useGlobalPkgs = true;
                 home-manager.useUserPackages = true;
-                home-manager.users.admin = import ./homes/${hostName}.nix;
+                home-manager.users.admin = import hmProfiles.${hostName};
               }
             ];
         };
@@ -62,15 +68,15 @@
       homeConfigurations = {
         "admin@client-laptop" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./homes/client-laptop.nix ];
+          modules = [ ./home/admin/laptop.nix ];
         };
         "admin@tablet" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./homes/tablet.nix ];
+          modules = [ ./home/admin/tablet.nix ];
         };
         "admin@gaming-pc" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./homes/gaming-pc.nix ];
+          modules = [ ./home/admin/gaming-pc.nix ];
         };
       };
     };
