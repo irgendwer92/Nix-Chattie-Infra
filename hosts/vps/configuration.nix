@@ -1,5 +1,10 @@
-{ ... }:
+{ disko, ... }:
 {
+  imports = [
+    disko.nixosModules.disko
+    ./disko.nix
+  ];
+
   networking.hostName = "vps";
   system.stateVersion = "24.11";
 
