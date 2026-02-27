@@ -81,3 +81,37 @@ sudo nixos-install --flake .#<host>
 # oder auf bestehendem System
 sudo nixos-rebuild switch --flake .#<host>
 ```
+
+## Secret-Management mit sops-nix
+
+Für Service-Hosts (`homeserver-laptop`, `vps`) ist `sops-nix` als Modul eingebunden. Die zentrale Moduldefinition liegt in `modules/nixos/secrets/sops.nix`.
+
+### Dateien
+
+- `.sops.yaml`: `age`-Empfänger und `creation_rules`
+- `secrets/common.yaml`: gemeinsame Secrets (SMB, Container, VPN)
+- `secrets/homeserver.yaml`: Homeserver-spezifische App-Secrets
+- `secrets/vps.yaml`: VPS-spezifische App-Secrets
+
+### Key-Setup (age)
+
+1. Admin-Key erzeugen (lokal, **nicht committen**):
+
+```bash
+mkdir -p ~/.config/sops/age
+age-keygen -o ~/.config/sops/age/keys.txt
+```
+
+2. Host-Key auf jedem Host erzeugen (wird durch `sops.age.generateKey = true` automatisch unter `/var/lib/sops-nix/key.txt` angelegt).
+
+3. Öffentliche `age1...`-Keys aus Admin- und Host-Keys in `.sops.yaml` eintragen.
+
+4. Secret-Dateien immer über `sops` bearbeiten:
+
+```bash
+sops secrets/common.yaml
+sops secrets/homeserver.yaml
+sops secrets/vps.yaml
+```
+
+> Platzhalterwerte `CHANGE_ME_ENCRYPTED` müssen durch echte, verschlüsselte Werte ersetzt werden.

@@ -3,6 +3,7 @@
   imports = [
     disko.nixosModules.disko
     ./disko.nix
+    ../../modules/nixos/secrets/sops.nix
   ];
 
   networking.hostName = "vps";

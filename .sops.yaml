@@ -1,0 +1,21 @@
+keys:
+  - &admin age1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5x3rxk2z8z5rte2s4m99qnt5kcl
+  - &homeserver_laptop age1k2l3m4n5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2g3h4j5k6l7m8n
+  - &vps age1m8n7b6v5c4x3y2z1a0s9d8f7g6h5j4k3l2p1o9i8u7y6t5r4e3w2q1z0x9
+creation_rules:
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *homeserver_laptop
+          - *vps
+  - path_regex: secrets/homeserver\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *homeserver_laptop
+  - path_regex: secrets/vps\.yaml$
+    key_groups:
+      - age:
+          - *admin
+          - *vps
