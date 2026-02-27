@@ -1,12 +1,7 @@
-{ ... }:
+{ lib, ... }:
 {
-  users.users.admin = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIChangeMeReplaceWithYourKey admin@nix-chattie"
-    ];
-  };
+  # Keine globalen Benutzer- oder Zugangsdefaults im Shared-Modul erzwingen.
+  # Benutzer, SSH-Keys und Gruppenmitgliedschaften werden host-spezifisch definiert.
 
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo.wheelNeedsPassword = lib.mkDefault true;
 }
