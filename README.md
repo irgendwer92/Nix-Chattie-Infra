@@ -115,3 +115,14 @@ sops secrets/vps.yaml
 ```
 
 > Platzhalterwerte `CHANGE_ME_ENCRYPTED` müssen durch echte, verschlüsselte Werte ersetzt werden.
+
+## Domaincontroller (homeserver-laptop)
+
+Der Homeserver ist als Samba AD Domain Controller für `chaos4all.de` vorbereitet:
+
+- Realm: `CHAOS4ALL.DE`
+- NetBIOS/Domain: `CHAOS4ALL`
+- Samba AD Provisioning läuft einmalig über ein Activation Script, sobald `sam.ldb` noch nicht existiert.
+- Das initiale Administrator-Passwort kommt aus `secrets/homeserver.yaml` unter `ad.domain-admin-password`.
+
+Nach dem ersten Deploy sollten DNS/NTP auf den DC zeigen und Clients der Domain beitreten.
