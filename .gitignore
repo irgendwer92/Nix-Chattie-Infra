@@ -1,0 +1,6 @@
+# Private secrets (unencrypted and encrypted host-specific secret material)
+secrets/private/
+
+# Local SOPS key material
+*.agekey
+*.age
