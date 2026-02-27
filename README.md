@@ -134,3 +134,45 @@ Der Homeserver ist als Samba AD Domain Controller für `chaos4all.de` vorbereite
 - Das initiale Administrator-Passwort kommt aus `secrets/homeserver.yaml` unter `ad.domain-admin-password`.
 
 Nach dem ersten Deploy sollten DNS/NTP auf den DC zeigen und Clients der Domain beitreten.
+
+## Pre-Publish-Check (vor öffentlichem Push/Release)
+
+Vor jedem öffentlichen Push/Release sollte ein kurzer Leak-Check laufen.
+
+### 1) Arbeitsbaum auf Secret-Muster prüfen
+
+Suche nach typischen Mustern wie `PRIVATE KEY`, `token`, `password`, `secret`, `AKIA...` etc.:
+
+```bash
+rg -n -i --hidden --glob '!.git/**' \
+  '(PRIVATE KEY|BEGIN [A-Z ]*PRIVATE KEY|\btoken\b|\bpassword\b|\bsecret\b|AKIA[0-9A-Z]{16})' .
+```
+
+Optional gibt es dafür ein Script:
+
+```bash
+./scripts/prepublish-check.sh
+```
+
+### 2) Nicht nur HEAD prüfen: Git-History scannen
+
+Ein sauberer aktueller Stand reicht nicht aus, wenn Secrets früher committed wurden.
+
+```bash
+git log -p --all -- .
+git rev-list --all | while read c; do
+  git grep -n -I -E '(PRIVATE KEY|token|password|AKIA[0-9A-Z]{16})' "$c"
+done
+```
+
+Wenn Treffer in der History auftauchen:
+
+1. Betroffene Secrets **sofort rotieren**.
+2. Historie bereinigen (z. B. mit `git filter-repo`, alternativ BFG Repo-Cleaner).
+3. Bereinigte Historie forciert pushen und Betroffene informieren.
+
+### 3) Zusätzliche Policy für öffentliche Inhalte
+
+- `flake.lock` darf keine privaten Hosts, privaten IP-Bereiche oder Schlüsselmaterial enthalten.
+- Öffentliche Module unter `modules/` dürfen keine privaten Hosts/IPs/Keys hardcoden.
+- Private Infrastruktur-Details gehören in private Overlays/Secrets, nicht ins öffentliche Repo.
