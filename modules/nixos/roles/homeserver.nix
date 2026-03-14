@@ -5,6 +5,7 @@ let
   dataRoot = "/srv/storage";
   appRoot = "${dataRoot}/8tb/data/apps";
   mediaRoot = "${dataRoot}/8tb/data/media";
+  backupsRoot = "${dataRoot}/mirror5tb/backups";
 in
 {
   config = mkIf hostIsHomeserver {
@@ -16,7 +17,12 @@ in
     services.btrfs.autoScrub = {
       enable = true;
       interval = "weekly";
-      fileSystems = [ "${dataRoot}/4tb/data" "${dataRoot}/8tb/data" ];
+      fileSystems = [
+        "${dataRoot}/8tb/data"
+        "${dataRoot}/12tb-a/data"
+        "${dataRoot}/12tb-b/data"
+        "${dataRoot}/mirror5tb/data"
+      ];
     };
 
     services.samba = {
@@ -42,7 +48,7 @@ in
         };
 
         backups = {
-          path = "${dataRoot}/4tb/backups";
+          path = backupsRoot;
           browseable = "yes";
           writable = "yes";
           "valid users" = "admin";
@@ -75,12 +81,18 @@ in
     ];
 
     systemd.tmpfiles.rules = [
-      "d ${dataRoot}/4tb/data 0775 root media - -"
-      "d ${dataRoot}/4tb/snapshots 0750 root root - -"
-      "d ${dataRoot}/4tb/backups 0770 root sambashare - -"
       "d ${dataRoot}/8tb/data 0775 root media - -"
       "d ${dataRoot}/8tb/snapshots 0750 root root - -"
       "d ${dataRoot}/8tb/backups 0770 root sambashare - -"
+      "d ${dataRoot}/12tb-a/data 0775 root media - -"
+      "d ${dataRoot}/12tb-a/snapshots 0750 root root - -"
+      "d ${dataRoot}/12tb-a/backups 0770 root sambashare - -"
+      "d ${dataRoot}/12tb-b/data 0775 root media - -"
+      "d ${dataRoot}/12tb-b/snapshots 0750 root root - -"
+      "d ${dataRoot}/12tb-b/backups 0770 root sambashare - -"
+      "d ${dataRoot}/mirror5tb/data 0775 root media - -"
+      "d ${dataRoot}/mirror5tb/snapshots 0750 root root - -"
+      "d ${backupsRoot} 0770 root sambashare - -"
       "d ${mediaRoot} 0775 root media - -"
       "d ${appRoot} 0770 root sambashare - -"
       "d ${appRoot}/traefik 0750 root root - -"
