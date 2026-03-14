@@ -2,8 +2,6 @@
 let
   inherit (lib) mkAfter mkIf;
   hostIsHomeserver = config.networking.hostName == "homeserver-laptop";
-  adRealm = "CHAOS4ALL.DE";
-  adDomain = "CHAOS4ALL";
   dataRoot = "/srv/storage";
   appRoot = "${dataRoot}/8tb/data/apps";
   mediaRoot = "${dataRoot}/8tb/data/media";
@@ -26,11 +24,7 @@ in
       openFirewall = true;
       settings = {
         global = {
-          workgroup = adDomain;
-          realm = adRealm;
-          "server role" = "active directory domain controller";
-          "dns forwarder" = "1.1.1.1";
-          "idmap_ldb:use rfc2307" = "yes";
+          workgroup = "WORKGROUP";
           "server string" = "homeserver-laptop";
           "map to guest" = "Bad User";
           "interfaces" = "lo enp* wlan*";
@@ -60,39 +54,7 @@ in
           writable = "yes";
           "valid users" = "admin";
         };
-
-        netlogon = {
-          path = "/var/lib/samba/sysvol/${builtins.toLower adRealm}/scripts";
-          "read only" = "no";
-        };
-
-        sysvol = {
-          path = "/var/lib/samba/sysvol";
-          "read only" = "no";
-        };
       };
-    };
-
-    sops.secrets."ad/domain-admin-password" = {
-      sopsFile = ../../../secrets/private/homeserver-laptop.yaml;
-      owner = "root";
-      mode = "0400";
-    };
-
-    system.activationScripts.provisionSambaDomain = {
-      deps = [ "users" "groups" ];
-      text = ''
-        if [ ! -f /var/lib/samba/private/sam.ldb ]; then
-          admin_password="$(cat ${config.sops.secrets."ad/domain-admin-password".path})"
-          ${pkgs.samba}/bin/samba-tool domain provision \
-            --realm=${adRealm} \
-            --domain=${adDomain} \
-            --server-role=dc \
-            --dns-backend=SAMBA_INTERNAL \
-            --use-rfc2307 \
-            --adminpass="$admin_password"
-        fi
-      '';
     };
 
     virtualisation.libvirtd = {
@@ -247,16 +209,8 @@ in
     };
 
     networking.firewall.allowedTCPPorts = mkAfter [
-      53
-      88
-      135
       139
-      389
       445
-      464
-      636
-      3268
-      3269
       80
       443
       8080
@@ -267,13 +221,8 @@ in
       8082
     ];
     networking.firewall.allowedUDPPorts = mkAfter [
-      53
-      88
-      123
       137
       138
-      389
-      464
     ];
   };
 }
