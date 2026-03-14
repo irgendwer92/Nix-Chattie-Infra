@@ -46,66 +46,7 @@
       };
     };
 
-    disk.storage4tb = {
-      type = "disk";
-      device = "/dev/disk/by-id/ata-storage-4tb";
-      content = {
-        type = "gpt";
-        partitions = {
-          data = {
-            size = "100%";
-            content = {
-              type = "btrfs";
-              extraArgs = [ "-f" ];
-              subvolumes = {
-                "@data" = {
-                  mountpoint = "/srv/storage/4tb/data";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-                "@snapshots" = {
-                  mountpoint = "/srv/storage/4tb/snapshots";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-                "@backups" = {
-                  mountpoint = "/srv/storage/4tb/backups";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-
-    disk.storage8tb = {
-      type = "disk";
-      device = "/dev/disk/by-id/ata-storage-8tb";
-      content = {
-        type = "gpt";
-        partitions = {
-          data = {
-            size = "100%";
-            content = {
-              type = "btrfs";
-              extraArgs = [ "-f" ];
-              subvolumes = {
-                "@data" = {
-                  mountpoint = "/srv/storage/8tb/data";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-                "@snapshots" = {
-                  mountpoint = "/srv/storage/8tb/snapshots";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-                "@backups" = {
-                  mountpoint = "/srv/storage/8tb/backups";
-                  mountOptions = [ "compress=zstd" "noatime" ];
-                };
-              };
-            };
-          };
-        };
-      };
-    };
+    # Storage-HDDs werden bewusst nicht über Disko verwaltet,
+    # damit bestehende Daten nicht überschrieben werden.
   };
 }

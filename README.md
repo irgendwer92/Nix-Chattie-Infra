@@ -64,6 +64,8 @@ home-manager switch --flake .#admin@<client-host>
 
 > **Achtung:** Disko überschreibt Partitionstabellen und Dateisysteme. Gerätepfade in `hosts/<hostname>/disko.nix` vorab auf die echten IDs anpassen.
 
+> Für `homeserver-laptop` verwaltet Disko absichtlich **nur** die Systemdisk. Bestehende Storage-HDDs werden in `hosts/homeserver-laptop/configuration.nix` ausschließlich gemountet.
+
 1. Zielhost wählen und Layout prüfen:
 
 ```bash
