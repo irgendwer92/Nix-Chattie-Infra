@@ -126,17 +126,6 @@ sops secrets/private/vps.yaml
 sudo nixos-rebuild switch --flake .#<host>
 ```
 
-## Domaincontroller (homeserver-laptop)
-
-Der Homeserver ist als Samba AD Domain Controller für `chaos4all.de` vorbereitet:
-
-- Realm: `CHAOS4ALL.DE`
-- NetBIOS/Domain: `CHAOS4ALL`
-- Samba AD Provisioning läuft einmalig über ein Activation Script, sobald `sam.ldb` noch nicht existiert.
-- Das initiale Administrator-Passwort kommt aus `secrets/private/homeserver-laptop.yaml` unter `ad.domain-admin-password`.
-
-Nach dem ersten Deploy sollten DNS/NTP auf den DC zeigen und Clients der Domain beitreten.
-
 ## Pre-Publish-Check (vor öffentlichem Push/Release)
 
 Vor jedem öffentlichen Push/Release sollte ein kurzer Leak-Check laufen.

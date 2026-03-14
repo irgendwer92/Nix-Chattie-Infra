@@ -15,6 +15,8 @@ Snapshots können z. B. mit `btrfs subvolume snapshot` nach `.../snapshots` gesc
 
 ## 2) Samba
 
+> Hinweis: Der Host wird nicht mehr als AD-Domaincontroller betrieben. Entsprechende Domain-/Realm-/Join-Schritte sind veraltet und entfallen.
+
 Definierte Freigaben:
 
 - `media` → `/srv/storage/8tb/data/media`
